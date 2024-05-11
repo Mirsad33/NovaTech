@@ -1,0 +1,73 @@
+{{!-- LANDING OR HOME PAGE: DISPLAYS DIFFERENT DATA BASED ON USER SESSION --}}
+{{#if user}}
+  {{!-- Each loop to displayall posts and thir comments to the DOM --}}
+  {{!-- Only displayes to logged in users --}}
+  {{#each posts}}
+    <div class="card m-3">
+      <div class="card-header fs-4">
+        {{this.user.username}}
+      </div>
+      <div class="card-body">
+        <h5 class="card-title">{{this.title}}</h5>
+        <p class="card-text">{{this.content}}</p>
+      </div>
+      <div class="card-footer py-1 d-flex justify-content-between dropdown">
+        <p class="my-auto" style="font-size: .75rem;">{{this.createdAt}}</p>
+        <button type="button" class="btn btn-secondary dropdown-toggle p-1" data-bs-toggle="dropdown" aria-expanded="true"
+          data-bs-auto-close="outside">
+          Comment
+        </button>
+        <form class="dropdown-menu p-4 w-75" action="/comment" method="POST">
+          <div class="mb-3">
+            <label for="comment" class="form-label">Comment</label>
+            <textarea type="text" name="comment" class="form-control" id="comment" placeholder="Type your comment here"></textarea>
+            <input type="hidden" name="postId" value="{{this.id}}">
+          </div>
+          <button type="submit" class="btn btn-primary">Add Comment</button>
+        </form>
+      </div>
+      {{#if comments}}
+        <div style="overflow-y: scroll; height: 10rem">
+          {{#each comments}}
+            <div class="m-3 border-top border-light-subtle my-auto">
+              <p class="card-text mt-2">{{this.comment}}</p>
+              <p class="card-text mb-2" style="font-size: .75rem;">-{{this.user.username}} | {{this.createdAt}}</p>
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <div></div>
+      {{/if}}
+    </div>
+  {{/each}}
+
+{{else}}
+  {{!-- Only displays to non-logged in users --}}
+  {{#each posts}}
+    <div class="card m-3">
+      <div class="card-header fs-4">
+        {{this.user.username}}
+      </div>
+      <div class="card-body">
+        <h5 class="card-title">{{this.title}}</h5>
+        <p class="card-text">{{this.content}}</p>
+      </div>
+      <div class="card-footer py-1">
+        <p class="my-auto" style="font-size: .75rem;">{{this.createdAt}}</p>
+      </div>
+      {{#if comments}}
+      <div style="overflow-y: scroll; height: 10rem">
+        {{#each comments}}
+        <div class="m-3 border-top border-light-subtle my-auto">
+          <p class="card-text mt-2">{{this.comment}}</p>
+          <p class="card-text mb-2" style="font-size: .75rem;">-{{this.user.username}} | {{this.createdAt}}</p>
+        </div>
+        {{/each}}
+      </div>
+      {{else}}
+      <div></div>
+      {{/if}}
+    </div>
+  {{/each}}
+
+{{/if}}
