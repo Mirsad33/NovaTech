@@ -1,12 +1,11 @@
-const { Model, DataTypes } = require('sequelize')
+const {Model, DataTypes} = require('sequelize')
 
 const client = require('../config/connections')
-const Post = require('./blog_post')
 const User = require('./user')
 
-class Comment extends Model{}
-//Model defines columns for comment table
-Comment.init(
+class Post extends Model{}
+//Post model used to defining table column
+Post.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -14,24 +13,31 @@ Comment.init(
       primaryKey: true,
       autoIncrement: true
     },
-    comment: {
+    title: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        len: [1, 40]
+      }
+    },
+    content: {
+      type: DataTypes.STRING,
+      allowNull: false
     },
     user_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
       references: {
         model: User,
         key: 'id'
       }
-    },
+    }
   },
   {
     sequelize: client,
     timestamps: true,
-    modelName: 'comment'
+    modelName: 'post'
   }
 )
 
-module.exports = Comment
+module.exports = Post
+  
