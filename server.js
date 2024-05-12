@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3000
 const session = require('express-session')
 const SequelizeStore = require('connect-session-sequelize')(session.Store)
 
-const routes = require('./routes') // Require rpotes index.js
+const routes = require('./routes') 
 
 //setup Handlebars
 app.engine('hbs', engine({

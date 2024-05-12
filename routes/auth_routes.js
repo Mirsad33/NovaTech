@@ -1,5 +1,5 @@
 const auth_router = require('express').Router()
-const auth_controller = require('../../controllers/auth_controller')
+const auth_controller = require('../controllers/auth_controller')
 
 // Save a user to the database and loh theminto a session
 auth_router.post('/auth/register', auth_controller.registerUser)

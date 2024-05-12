@@ -1,4 +1,3 @@
-\c postgres;
 
-DROP DATABASE IF EXISTS NovaTech_db;
-CREATE DATABASE NovaTech_db;
+DROP DATABASE IF EXISTS Nova_Tech_db;
+CREATE DATABASE Nova_Tech_db;
