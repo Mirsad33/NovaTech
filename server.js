@@ -1,46 +1,54 @@
-const express = require('express')
-const { engine } = require('express-handlebars')
-const path = require('path')
-
 require('dotenv').config()
-const client = require('./config/connections')
+
+const express = require('express')
+const path = require('path');
+const client = require('./db/client')
+const session = require('express-session')
+const SequelizeStore = require("connect-session-sequelize")(session.Store)
+const { engine } = require('express-handlebars')
+const { User, Post } = require('./models')
+
+// Pull in your routes
+const routes = require('./routes')
 
 const app = express()
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3333
 
-const session = require('express-session')
-const SequelizeStore = require('connect-session-sequelize')(session.Store)
+console.log("Views directory path:", path.join(__dirname, 'views'));
 
-const routes = require('./routes') 
 
-//setup Handlebars
-app.engine('hbs', engine({
-    extname: 'hbs'
-}))
-app.set('view engine', 'hbs')
-
-app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
-app.use(express.static(path.join(__dirname, 'public')))
-
+// Set up the express sessions
+const store = new SequelizeStore({ db: client })
 app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: 'some secret',
+    store,
     resave: false,
     saveUninitialized: true,
-    store: new SequelizeStore({
-        db: client,
-    }),
-    cookie: { 
-        maxAge: 300000,
-        // secure: true
-    }
+    cookie: { secure: false } // Change to false if not using HTTPS
 }))
 
+// Parse incoming requests with JSON payloads
+app.use(express.json())
+
+// Parse incoming requests with URL-encoded payloads
+app.use(express.urlencoded({ extended: false }))
+
+// Serve static files in public directory
+app.use(express.static('public'))
+
+// Set up handlebars template engine
+app.engine('.hbs', engine({ extname: '.hbs' }))
+app.set('view engine', '.hbs')
+
+// Use routes
 app.use('/', routes)
 
+// Sync the database and start the server
 client.sync({ force: false })
     .then(() => {
-        app.listen(PORT, () => console.log('Listening on port:', PORT))
-    }
-)
+        app.listen(PORT, () => {
+            console.log('Server running on port:', PORT)
+        })
+    })
+
 

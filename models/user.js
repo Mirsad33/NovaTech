@@ -1,58 +1,58 @@
-const { Model, DataTypes } = require('sequelize')
-const client = require('../config/connections')
-const bcrypt = require('bcrypt')
+const { Model, DataTypes } = require('sequelize');
+const client = require('../db/client')
+const { hash, compare } = require('bcrypt')
 
 class User extends Model {
-  //Use bcrypt to compare and validate input password to encrypted password
-  validatePassword(password) {
-    return bcrypt.compareSync(password, this.password)
+  // Use bcrypt to compare and validate input password to encrypted password
+  async validatePassword(formPassword) {
+    const is_valid = await compare(formPassword, this.password)
+    return is_valid
   }
 }
-//Defines colomns for User table
+
+// Define columns for User table
 User.init(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-      autoIncrement: true
-    },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        isEmail: {
-          args: true,
-          msg: 'You must provide a valid email string'
-        }
+      username: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          unique: true
+      },
+      email: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          unique: {
+              args: true,
+              message: "user with this already exists"
+          },
+          validate: {
+              isEmail: true
+          }
+      },
+      password: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          validate: {
+              len: 6
+          }
       }
-    },
-    username: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        len: [6]
-      }
-    }
   },
   {
-    sequelize: client,
-    timestamps: false,
-    modelName: 'user',
-    hooks: { //Creates an encrypted password value to protect new user password
-      beforeCreate: async (newData) => {
-        newData.password = await bcrypt.hash(newData.password, 10) //encrypt the password
-        return newData
-      }
+      sequelize: client,
+      modelName: "user",
+      hooks: {
+        async beforeCreate(user) {
+          user.password = await hash(user.password, 10);
+        },
+      },
+      scopes: {
+        withoutPassword: {
+          attributes: { exclude: ["password"] },
+        },
+      },
     }
-  }
-
 )
 
+
 module.exports = User
-  
+

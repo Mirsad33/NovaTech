@@ -1,48 +1,65 @@
-const { Post } = require('../models')
-//Methods for Post routes
-module.exports = {
-  // Save post to database
-  async savePostToDb(req, res) {
-    const { title, content } = req.body //Grab title and content input
-    const user_id = req.session.user_id //Grab session id for associations
+// const { Post } = require('../models')
 
-    if (!title || !content) { //If no title or content break
-      return res.send({ message: 'Title and content are required.' })
-    }
+// module.exports = {
+  
+//   // Controller function for saving a new post to the database
+//   async savePostToDb(req, res) {
+//     // Extract title and content from request body
+//     const { title, content } = req.body 
+//     // Retrieve user ID from session
+//     const user_id = req.session.user_id 
 
-    try {
-      await Post.create({ title, content, user_id }) //Save post to database
+//     // Check if title and content are provided
+//     if (!title || !content) { 
+//       return res.send({ message: 'Title and content are required.' })
+//     }
 
-      res.redirect('/dashboard') //Redirect to dashboard
+//     try {
+//       // Create a new post in the database
+//       await Post.create({ title, content, user_id }) 
 
-    } catch (err) {
-      console.error('Error creating post', err)
-    }
-  },
-  // Update a post
-  async updatePost(req, res) {
-    const { title, content, postId } = req.body //Grab updated values from DOM
+//       // Redirect user to the dashboard after post creation
+//       res.redirect('/dashboard') 
 
-    try {
-      await Post.update( //Update post in the database
-        { title, content },
-        { where: { id: postId } }
-      )
+//     } catch (err) {
+//       // Handle any errors that occur during post creation
+//       console.error('Error creating post', err)
+//     }
+//   },
+  
+//   // Controller function for updating an existing post
+//   async updatePost(req, res) {
+//     // Extract title, content, and post ID from request body
+//     const { title, content, postId } = req.body 
 
-      res.redirect('/dashboard') //Redirect back to the dashboard
+//     try {
+//       // Update the post in the database based on post ID
+//       await Post.update( 
+//         { title, content },
+//         { where: { id: postId } }
+//       )
 
-    } catch (err) {
-      console.log(err)
-    }
-  },
-  // Delete post from the database and the DOM
-  async deleteRoute(req, res) {
-    const { postId } = req.body
-    await Post.destroy({ where: { id: postId } })
+//       // Redirect user to the dashboard after post update
+//       res.redirect('/dashboard') 
 
-    res.redirect('/dashboard')
-  }
+//     } catch (err) {
+//       // Handle any errors that occur during post update
+//       console.log(err)
+//     }
+//   },
+  
+//   // Controller function for deleting a post
+//   async deleteRoute(req, res) {
+//     // Extract post ID from request body
+//     const { postId } = req.body
+//     // Delete the post from the database based on post ID
+//     await Post.destroy({ where: { id: postId } })
 
-}
+//     // Redirect user to the dashboard after post deletion
+//     res.redirect('/dashboard')
+//   }
+
+// }
+
 
 

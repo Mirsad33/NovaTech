@@ -1,10 +1,30 @@
 const router = require('express').Router()
-// Brings all routes to a single file for easy export and import
-const views = require('./view_routes')
-const auth = require('./auth_routes')
-const post = require('./dashboard_routes')
-const comment =require('./comment_routes')
+const User = require('../models/User')
+const Post = require('../models/Post')
 
-router.use('/', views, auth, post, comment)
+async function attachUser(req, res, next) {
+    const user_id = req.session.user_id
+    if (user_id) {
+        const user = await User.findByPk(user_id, {
+            attributes: ['id', 'username', 'email', 'posts'],
+            include: [{
+                model: Post,
+                as: 'posts'
+            }],
+        })
+        req.user = user.get({ plain: true })
+    }
+    next()
+}
+
+const user_routes = require('./user_routes.js')
+router.use('/auth', attachUser, user_routes)
+
+const blog_routes = require('./blog_routes.js')
+router.use('/posts', attachUser, blog_routes)
+
+const views = require('./view_routes.js')
+router.use('/', attachUser, views)
 
 module.exports = router
+

@@ -1,20 +1,26 @@
-const { Comment } = require('../models')
-// Method that saves comment to database
-module.exports = {
-  async saveCommentToDb(req, res) {
-    try {
-      const {comment, postId} = req.body // Grab user input from the DOM
-      const user = req.session.user_id // Grab user session id
+// const { Comment } = require('../models')
+
+// module.exports = {
+//   // Controller function for saving a new comment to the database
+//   async saveCommentToDb(req, res) {
+//     try {
+//       // Extract comment content and associated post ID from request body
+//       const { comment, postId } = req.body 
+//       // Retrieve user ID from session
+//       const user = req.session.user_id 
   
-      await Comment.create({ // Save comment data to the database
-        comment: comment, 
-        user_id: user,
-        postId: postId
-      })
+//       // Create a new comment in the database
+//       await Comment.create({ 
+//         comment: comment, 
+//         user_id: user,
+//         postId: postId
+//       })
   
-      res.redirect('/') // Send the user back to the landing page
-    } catch (err) {
-      console.log(err)
-    }
-  }
-}
+//       // Redirect user to the homepage after comment creation
+//       res.redirect('/') 
+//     } catch (err) {
+//       // Handle any errors that occur during comment creation
+//       console.log(err)
+//     }
+//   }
+// }

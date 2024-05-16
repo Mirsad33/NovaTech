@@ -1,33 +1,58 @@
-const { User } = require('../models')
-// Controller methods for aith routes
-module.exports = {
-  async registerUser(req, res) { //For register route
-    try {
-      const data = req.body
-      const user = await User.create(data)
+// const { User } = require("../models");
+// const bcrypt = require("bcrypt");
 
-      req.session.user_id = user.id
-      res.redirect('/dashboard')
-    } catch (err) {
-      console.log(err)
-    }
-  },
+// module.exports = {
+//   // Controller function for registering a new user
+//   async registerUser(req, res) {
+//     try {
+//       // Extract user data from request body
+//       const { username, email, password } = req.body;
 
-  async loginUser(req, res) { //For login route
-    const { username, password } = req.body //Grab user login from dom
-    const user = await User.findOne({ //Find the user with the input username
-      where: {
-        username: username
-      }
-    })
+//       // Hash the password
+//       const hashedPassword = await bcrypt.hash(password, 10);
 
-    if (!user) return res.redirect('/register') // If no user exists redirect to register
+//       // Create a new user in the database
+//       const user = await User.create({ username, email, password: hashedPassword });
 
-    const validate_pass = await user.validatePassword(password) //Validate password
+//       // Store the user ID in the session
+//       req.session.user_id = user.id;
+      
+//       res.status(200).send("New user created");
+//     } catch (err) {
+//       console.error(err);
+//       res.status(500).send("Internal server error");
+//     }
+//   },
+  
+//   // Controller function for authenticating a user login
+//   async loginUser(req, res) {
+//     // Extract username and password from request body
+//     const { username, password } = req.body;
 
-    if (!validate_pass) return res.redirect('/login/Invalid Password')
+//     try {
+//       // Find the user in the database based on the provided username
+//       const user = await User.findOne({ where: { username } });
 
-    req.session.user_id = user.id //Start a session
-    res.redirect('/')
-  }
-}
+//       if (!user) {
+//         return res.status(400).send('Failed to login user');
+//       }
+
+//       // Validate the provided password against the stored hash
+//       const isValidPassword = await bcrypt.compare(password, user.password);
+
+//       if (!isValidPassword) {
+//         return res.status(400).send('Failed to validate password');
+//       }
+
+//       // Store the user ID in the session
+//       req.session.user_id = user.id;
+
+//       // Redirect user to the homepage after successful login
+//       res.redirect("/");
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).send("Internal server error");
+//     }
+//   },
+// };
+
