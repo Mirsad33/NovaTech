@@ -5,11 +5,9 @@ const User = require('../models/User');
 // Middleware to check if user is authenticated
 function isAuth(req, res, next) {
     if (!req.session.user_id) {
-       // Redirect to login page if user is not authenticated
-       return res.redirect('/login');
+        return res.redirect('/login'); // Ensure return to stop further execution
     }
-    // Continue to the next middleware or route handler
-    return next();
+    next(); // Proceed to the next middleware or route handler
 }
 
 // Home route
@@ -29,13 +27,18 @@ router.get('/', async (req, res) => {
 
 // Route to fetch and render all posts
 router.get('/posts', async (req, res) => {
-    // Fetch all posts from the database
-    const posts = await Post.findAll();
-    
-    // Render the 'posts' view with the fetched posts
-    res.render('posts', {
-        posts: posts.map(p => p.get({ plain: true }))
-    });
+    try {
+        // Fetch all posts from the database
+        const posts = await Post.findAll();
+        
+        // Render the 'posts' view with the fetched posts
+        res.render('posts', {
+            posts: posts.map(p => p.get({ plain: true }))
+        });
+    } catch (error) {
+        console.error('Error fetching posts:', error);
+        res.status(500).send('Error fetching posts');
+    }
 });
 
 // Dashboard route
@@ -88,24 +91,26 @@ router.get('/logout', async (req, res) => {
 
 // User route (requires authentication)
 router.get('/user', isAuth, async (req, res) => {
-    // If user is not set, return 404
-    if (!req.user) {
-        return res.status(404).send("User not found");
+    try {
+        // If user is not set, return 404
+        if (!req.user) {
+            return res.status(404).send("User not found");
+        }
+        // Fetch user from the database (assuming req.user.id is set)
+        const user = await User.findByPk(req.user.id);
+        
+        // Prepare user object for rendering the view
+        const userObj = {
+            isLoggedIn: true,
+            user: req.user  // Assuming req.user is correctly set elsewhere
+        };
+        
+        // Render the 'dashboard' view with userObj
+        res.render('dashboard', userObj);
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).send('Error fetching user');
     }
-    // Fetch user from the database (assuming req.user.id is set)
-    const user = await User.findByPk(req.user.id);
-    
-    // Prepare user object for rendering the view
-    const userObj = {
-        isLoggedIn: true,
-        user: req.user  // Assuming req.user is correctly set elsewhere
-    };
-    
-    // Render the 'dashboard' view with userObj
-    res.render('dashboard', userObj);
 });
 
-// Export the router
 module.exports = router;
-
-

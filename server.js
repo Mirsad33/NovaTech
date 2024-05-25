@@ -1,54 +1,49 @@
-require('dotenv').config()
+// Import necessary modules
+const express = require('express');
+const client = require('./db/client');
+const session = require('express-session');
+const SequelizeStore = require("connect-session-sequelize")(session.Store);
+const { engine } = require('express-handlebars');
+const store = new SequelizeStore({ db: client });
+const { User, Post } = require('./models');
+const routes = require('./routes');
+const registerRoutes = require('./routes/registerRoutes.js'); // Import the router for registration
 
-const express = require('express')
-const path = require('path');
-const client = require('./db/client')
-const session = require('express-session')
-const SequelizeStore = require("connect-session-sequelize")(session.Store)
-const { engine } = require('express-handlebars')
-const { User, Post } = require('./models')
+const app = express();
+const PORT = process.env.PORT || 3333;
 
-// Pull in your routes
-const routes = require('./routes')
+// Middleware to parse JSON requests
+app.use(express.json());
 
-const app = express()
-const PORT = process.env.PORT || 3333
-
-console.log("Views directory path:", path.join(__dirname, 'views'));
-
+// Middleware to parse URL-encoded payloads
+app.use(express.urlencoded({ extended: false }));
 
 // Set up the express sessions
-const store = new SequelizeStore({ db: client })
 app.use(session({
-    secret: 'some secret',
+    secret: 'something',
     store,
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false } // Change to false if not using HTTPS
-}))
+}));
 
-// Parse incoming requests with JSON payloads
-app.use(express.json())
+// Serve static files in the public directory
+app.use(express.static('public'));
 
-// Parse incoming requests with URL-encoded payloads
-app.use(express.urlencoded({ extended: false }))
+// Set up Handlebars template engine
+app.engine('.hbs', engine({ extname: '.hbs' }));
+app.set('view engine', '.hbs');
 
-// Serve static files in public directory
-app.use(express.static('public'))
+// Mount the main routes
+app.use('/', routes);
 
-// Set up handlebars template engine
-app.engine('.hbs', engine({ extname: '.hbs' }))
-app.set('view engine', '.hbs')
+// Mount the register route
+app.use('/', registerRoutes); // Use the router for handling registration
 
-// Use routes
-app.use('/', routes)
-
-// Sync the database and start the server
+// Listen for the port
 client.sync({ force: false })
     .then(() => {
         app.listen(PORT, () => {
-            console.log('Server running on port:', PORT)
-        })
-    })
-
-
+            console.log('Server running on port:', PORT);
+        });
+    });
