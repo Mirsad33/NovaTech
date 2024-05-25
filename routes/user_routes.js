@@ -1,101 +1,77 @@
-const router = require('express').Router()
-const User = require('../models/User')
-const Post = require('../models/Post')
-
-
+const router = require('express').Router();
+const User = require('../models/User');
+const Post = require('../models/Post');
 
 router.get('/', async (req, res) => {
-    try{
+    try {
         const users = await User.scope('withoutPassword').findAll({
-            include: {model: Post},
-        })
-        return res.json(users)
+            include: { model: Post },
+        });
+        return res.json(users);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
-    catch (err) {
-        console.log(err)
-    }
-})
-
+});
 
 router.get('/:id', async (req, res) => {
-    let id = req.params.id
+    const id = req.params.id;
     try {
-        const user = await User.scope('withoutPassword').findByPk(id,
-            {
-                include: { model: Post },
-            })
-        return res.json(user)
-
+        const user = await User.scope('withoutPassword').findByPk(id, {
+            include: { model: Post },
+        });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        return res.json(user);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
-    catch (err) {
-        console.log(err)
-    }
-})
-
-
+});
 
 router.post('/register', async (req, res) => {
     try {
-        let newUser = req.body
-
-        const user = await User.create(newUser)
-        req.session.user_id = user.id
-        console.log('user logged in', user)
-        return res.redirect('/dashboard')
-
+        const newUser = req.body;
+        const user = await User.create(newUser);
+        req.session.user_id = user.id;
+        console.log('User registered and logged in:', user.username);
+        return res.redirect('/dashboard');
     } catch (err) {
-        console.log(err)
+        console.error(err);
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
-})
-
-
+});
 
 router.post('/login', async (req, res) => {
     try {
-
-        let input = req.body
-        console.log('Received login request for username:', input.username);
-        const user = await User.findOne({
-            where: {
-                username: input.username,
-            }
-        });
-        console.log('User found:', user)
-        if (user) {
-            console.log('Theres a user: ' + user.username)
-            const is_valid = await user.validatePass(input.password);
-            console.log('Password valid:', is_valid);
-            if (is_valid) {
-                console.log('youre logged in ' + user.username)
-            }
-           
+        const { username, password } = req.body;
+        console.log('Received login request for username:', username);
+        const user = await User.findOne({ where: { username } });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
         }
-        
-        req.session.user_id = user.id; // Set user session
-            console.log('You are logged in:', user.username);
-             res.redirect('/dashboard');
-
+        const is_valid = await user.validatePass(password);
+        if (!is_valid) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+        req.session.user_id = user.id;
+        console.log('User logged in:', user.username);
+        return res.redirect('/dashboard');
     } catch (err) {
-       console.log(err)
+        console.error(err);
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
-})
+});
 
 router.get('/logout', async (req, res) => {
     try {
-        req.session.destroy()
-        return res.redirect('/logout')
+        req.session.destroy();
+        return res.redirect('/logout');
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
-    catch (err) {
-        console.log(err)
-    }
-})
-
-
-// router.post('dashboard', async (req, res) => {
-//     try {
-        
-//     }
-// })
-
+});
 
 module.exports = router;
