@@ -14,6 +14,7 @@ function isAuth(req, res, next) {
 
 // Create a post
 router.post('/', isAuth, async (req, res) => {
+    console.log(req.session.user_id);
     try {
 
         const userId = req.session.user_id;
@@ -31,9 +32,9 @@ router.post('/', isAuth, async (req, res) => {
             user_id: userId // Ensure this is being correctly populated
         });
         console.log('Request body:', req.body);
-        res.redirect('/home');
+       return res.redirect('/');
     } catch (error) {
-        console.error("Error in POST /home:", error);
+        console.error("Error in POST /butter:", error);
         if (!res.headersSent) {
             res.status(500).send("Error processing your request.");
         }

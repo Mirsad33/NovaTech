@@ -42,7 +42,8 @@ User.init(
             validate: {
                 len: 6
             }
-        }
+        },
+      
     },
     {
         sequelize: client,
