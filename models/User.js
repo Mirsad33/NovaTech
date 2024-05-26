@@ -4,10 +4,9 @@ const { hash, compare } = require("bcrypt");
 
 
 class User extends Model {
-    async validatePass(formPassword) {
- const is_valid = await compare(formPassword, this.password);
- return is_valid;
-    }
+  async validatePass(formPassword) {
+      return await compare(formPassword, this.password);
+  }
 }
 
 
