@@ -6,7 +6,7 @@ async function attachUser(req, res, next) {
     const user_id = req.session.user_id
     if (user_id) {
         const user = await User.findByPk(user_id, {
-            attributes: ['id', 'username', 'email'],
+            attributes: ['id', 'username', 'email', 'posts'],
             include: [{
                 model: Post,
             }],
@@ -19,14 +19,14 @@ async function attachUser(req, res, next) {
 
 const user_routes = require('./user_routes')
 
-router.use('/auth',attachUser, user_routes)
+router.use('/api', user_routes)
 
 const blog_routes = require('./blog_routes.js')
 
-router.use('/posts',attachUser, blog_routes)
+router.use('/api/posts', blog_routes)
 
 const views = require('./view_routes.js')
 
-router.use('/',attachUser, views)
+router.use('/', views)
 
 module.exports = router

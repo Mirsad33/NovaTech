@@ -20,9 +20,13 @@ router.get('/', async (req, res) => {
         isLoggedIn: isLoggedIn,
         user: req.user  // Assuming req.user is correctly set elsewhere
     };
-
+    const postsData = await Post.findAll({
+        include: { model: User },
+    });
+    const posts = postsData.map((post) => post.get({ plain: true }));
+    console.log(posts);
     // Render the 'home' view with userObj
-    res.render('home', userObj);
+    res.render('home', {posts});
 });
 
 // Route to fetch and render all posts
@@ -50,7 +54,7 @@ router.get('/dashboard', (req, res) => {
     };
     
     // Render the 'dashboard' view with userObj
-    res.render('dashboard', userObj);
+    res.render('dashboard',{username: req.session.username})
 });
 
 // Register route

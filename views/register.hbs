@@ -1,37 +1,37 @@
 <div class="d-flex flex-column align-items-center justify-content-center h-75">
   <h1>Register</h1>
   <form
-    class="d-flex flex-column align-items-center justify-content-center gap-2"
-    action="/register"
-    method="POST"
+    class="signup-form d-flex flex-column align-items-center justify-content-center gap-2"
+    
   >
     <div class="mb-3">
       <input
-        name="email"
-        type="email"
-        class="form-control"
-        id="email"
-        placeholder="Enter your email"
-      />
-    </div>
-    <div class="mb-3">
-      <input
-        name="username"
+        name="username-signup"
         type="text"
         class="form-control"
-        id="email"
+        id="username-signup"
         placeholder="Enter your username"
       />
     </div>
     <div class="mb-3">
       <input
-        name="password"
+        name="email-signup"
+        type="text"
+        class="form-control"
+        id="email-signup"
+        placeholder="Enter your email"
+      />
+    </div>
+    <div class="mb-3">
+      <input
+        name="password-signup"
         type="password"
         class="form-control"
-        id="password"
+        id="password-signup"
         placeholder="Enter your password"
       />
     </div>
     <button type="submit" class="btn btn-info form-control">Submit</button>
   </form>
 </div>
+<script src="js/register.js"></script>

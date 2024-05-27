@@ -1,4 +1,5 @@
 // Import necessary modules
+require('dotenv').config();
 const express = require('express');
 const { Sequelize } = require('sequelize');
 const session = require('express-session');
@@ -9,21 +10,15 @@ const routes = require('./routes');
 const registerRoutes = require('./routes/registerRoutes');
 const authRoutes = require('./routes/authRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const sequelize = require('./db/client');
 
 const app = express();
 const PORT = process.env.PORT || 3333;
 
 // Database connection
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialect: 'postgres',
-  protocol: 'postgres',
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
-  },
-});
+// console.log('DATABASE_URL:', process.env.DATABASE_URL);
+// const DATABASE_URL = process.env.DATABASE_URL || 'postgres://user:password@localhost:5432/database';
+
 
 // Session store
 const store = new SequelizeStore({ db: sequelize });
@@ -49,7 +44,7 @@ app.use(express.static('public'));
 // Set up Handlebars template engine
 app.engine('.hbs', engine({ extname: '.hbs' }));
 app.set('view engine', '.hbs');
-
+app.use(express.static('public'));
 // Mount the main routes
 app.use('/', routes);
 
@@ -60,11 +55,7 @@ app.use('/dashboard', dashboardRoutes); // Use the router for handling dashboard
 
 // Sync database and start server
 sequelize
-  .authenticate()
-  .then(() => {
-    console.log('Connection has been established successfully.');
-    return sequelize.sync({ force: false });
-  })
+  .sync({ force: false })
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Server running on port: ${PORT}`);

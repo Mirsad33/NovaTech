@@ -6,9 +6,9 @@ router.get('/dashboard', (req, res) => {
     if (!req.session.user_id) {
         return res.redirect('/auth/login');
     }
-
+console.log(req.session.username);
     // Render the dashboard view
-    res.render('dashboard', { user: req.session.user_id });
+    res.render('dashboard', { username: req.session.username });
 });
 
 module.exports = router;

@@ -32,7 +32,7 @@ router.post('/', isAuth, async (req, res) => {
             user_id: userId // Ensure this is being correctly populated
         });
         console.log('Request body:', req.body);
-       return res.redirect('/');
+       return res.json(newPost);
     } catch (error) {
         console.error("Error in POST /butter:", error);
         if (!res.headersSent) {
