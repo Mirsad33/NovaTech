@@ -5,7 +5,7 @@ const newFormHandler = async (event) => {
   const text = document.querySelector('#text-desc').value.trim();
 
   if (title && text) {
-    const response = await fetch(`/api/post`, {
+    const response = await fetch(`/api/posts`, {
       method: 'POST',
       body: JSON.stringify({ title, text }),
       headers: {
@@ -37,10 +37,10 @@ const newFormHandler = async (event) => {
 //   }
 // };
 
-// document
-//   .querySelector('.new-post-form')
-//   .addEventListener('submit', newFormHandler);
-
 document
-  .querySelector('.post-list')
-  .addEventListener('click', delButtonHandler);
+  .querySelector('.new-post-form')
+  .addEventListener('submit', newFormHandler);
+
+// document
+//   .querySelector('.post-list')
+//   .addEventListener('click', delButtonHandler);
